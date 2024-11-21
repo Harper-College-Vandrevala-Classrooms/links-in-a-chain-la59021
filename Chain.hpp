@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ChainLink.hpp"
-#include <string>
+#include <iostream>
 using namespace std;
 
 class Chain {
@@ -9,42 +9,72 @@ class Chain {
         Chain(ChainLink *chainlink) {
             this->chainlink = chainlink;
         }
-        Chain(ChainLink *chainlink, Chain *link) {
+
+        Chain(ChainLink *chainlink, Chain *prevLink) {
             this->chainlink = chainlink;
-            link->link = this;
+
+            this->dnLink = prevLink;
+            prevLink->upLink = this;
         }
+
         Chain next() {
-            return *(this->link);
+            if (this->upLink == nullptr) {
+                cout << "This is the end of the list." << endl;
+                return nullptr;
+            }
+            return *(this->upLink);
         }
+
+        Chain prev() {
+            if (this->dnLink == nullptr) {
+                cout << "This is the start of the list." << endl;
+                return nullptr;
+            }
+            return *(this->dnLink);
+        }
+
         ChainLink data() {
             return *(this->chainlink);
         }
+
         int size() {
             int count = 0;
-            if (link != nullptr){
-                count = this->link->size(1);
+            if (upLink != nullptr){
+                count = this->upLink->size(1);
             }
             return count;
         }
-        void push_back(Chain *newLink) {
-            if (link == nullptr) {
-                this->link = newLink;
+
+        void append(Chain *newLink) { // This sets a new tail
+            if (upLink == nullptr) {
+                this->upLink = newLink;
+                newLink->dnLink = this;
             }
             else {
-                link->push_back(newLink);
+                upLink->append(newLink);
             }
         }
-        void push_front(Chain *newLink) {
-            newLink->link = this;
+
+        void prepend(Chain *newLink) { // This sets a new head
+            if (dnLink == nullptr) {
+                newLink->upLink = this;
+                this->dnLink = newLink;
+            }
+            else {
+                dnLink->prepend(newLink);
+            }
         }
+
+
     private:
         int size(int count) {
-            if (link != nullptr){
+            if (upLink != nullptr){
                 count++;
-                count = this->next().size(count);
+                count = this->upLink->size(count);
             }
             return count;
         }
         ChainLink *chainlink = nullptr;
-        Chain *link = nullptr;
+        Chain *upLink = nullptr;
+        Chain *dnLink = nullptr;
 };
