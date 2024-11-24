@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 class ChainLink {
@@ -7,7 +6,7 @@ class ChainLink {
         ChainLink(std::string color) {
             this->color = color;
         }
-        std::string get_color() {
+        std::string get_Color() {
             return this->color;
         }
     private:
